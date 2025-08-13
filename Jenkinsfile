@@ -2,17 +2,19 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "my-app:${BUILD_NUMBER}"
-        CONTAINER_NAME = "my-app-container-${BUILD_NUMBER}"
-        ECR_REPO = "992382545251.dkr.ecr.us-east-1.amazonaws.com/yuvaly-repo:${BUILD_NUMBER}"
+        IMAGE_NAME = "my-app"
+        ECR_REPO = "992382545251.dkr.ecr.us-east-1.amazonaws.com/yuvaly-repo"
         AWS_REGION = "us-east-1"
+        BUILD_TAG = "${BUILD_NUMBER}"                   
+        CONTAINER_NAME = "${IMAGE_NAME}-${BRANCH_NAME}-${BUILD_TAG}"
+        PORT = "${5000 + BUILD_NUMBER}"                
     }
 
     stages {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t ${IMAGE_NAME} ."
+                    sh "docker build -t ${IMAGE_NAME}:${BUILD_TAG} ."
                 }
             }
         }
@@ -20,7 +22,7 @@ pipeline {
         stage('Tag for ECR') {
             steps {
                 script {
-                    sh "docker tag ${IMAGE_NAME} ${ECR_REPO}"
+                    sh "docker tag ${IMAGE_NAME}:${BUILD_TAG} ${ECR_REPO}:${BUILD_TAG}"
                 }
             }
         }
@@ -36,7 +38,7 @@ pipeline {
         stage('Push to ECR') {
             steps {
                 script {
-                    sh "docker push ${ECR_REPO}"
+                    sh "docker push ${ECR_REPO}:${BUILD_TAG}"
                 }
             }
         }
@@ -46,7 +48,7 @@ pipeline {
                 script {
                     sh "docker rm -f ${CONTAINER_NAME} || true"
 
-                    sh "docker run -d --name ${CONTAINER_NAME} -p 5000:5000 ${IMAGE_NAME}"
+                    sh "docker run -d --name ${CONTAINER_NAME} -p ${PORT}:5000 ${IMAGE_NAME}:${BUILD_TAG}"
                 }
             }
         }
