@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "my-app:latest"
-        CONTAINER_NAME = "my-app-container"
+	CONTAINER_NAME = "my-app-${env.BRANCH_NAME}"
         ECR_REPO = "992382545251.dkr.ecr.us-east-1.amazonaws.com/yuvaly-repo:latest"
         AWS_REGION = "us-east-1"
     }
