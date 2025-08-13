@@ -3,9 +3,9 @@ pipeline {
 
     environment {
         IMAGE_NAME = "my-app:latest"
-	CONTAINER_NAME = "my-app-${env.BRANCH_NAME}"
         ECR_REPO = "992382545251.dkr.ecr.us-east-1.amazonaws.com/yuvaly-repo:latest"
         AWS_REGION = "us-east-1"
+        CONTAINER_NAME = "my-app-${env.BRANCH_NAME}"
     }
 
     stages {
@@ -44,7 +44,7 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-                    sh "docker rm -f ${CONTAINER_NAME} || true"
+                    sh "docker ps -a -q -f name=${CONTAINER_NAME} | grep . && docker rm -f ${CONTAINER_NAME} || true"
 
                     sh "docker run -d --name ${CONTAINER_NAME} -p 5000:5000 ${IMAGE_NAME}"
                 }
@@ -60,4 +60,3 @@ pipeline {
         }
     }
 }
-
