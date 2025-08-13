@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "my-app:latest"
-        CONTAINER_NAME = "my-app-container"
-        ECR_REPO = "992382545251.dkr.ecr.us-east-1.amazonaws.com/yuvaly-repo:latest"
+        IMAGE_NAME = "my-app:${BUILD_NUMBER}"
+        CONTAINER_NAME = "my-app-container-${BUILD_NUMBER}"
+        ECR_REPO = "992382545251.dkr.ecr.us-east-1.amazonaws.com/yuvaly-repo:${BUILD_NUMBER}"
         AWS_REGION = "us-east-1"
     }
 
